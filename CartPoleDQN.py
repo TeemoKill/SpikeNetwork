@@ -11,9 +11,9 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-ENV_NAME = 'MountainCar-v0'
+# ENV_NAME = 'MountainCar-v0'
 # ENV_NAME = 'MountainCarContinuous-v0'
-# ENV_NAME = 'CartPole-v0'
+ENV_NAME = 'CartPole-v0'
 # ENV_NAME = 'CartPole-v1'
 # ENV_NAME = 'LunarLander-v2'
 
@@ -181,7 +181,7 @@ def main():
 	target_net.eval()
 
 	# optimizer = optim.RMSprop(policy_net.parameters(), lr=LEARNING_RATE)
-	optimizer = torch.optim.Adam(policy_net.parameters(), lr=0.001)
+	optimizer = torch.optim.Adam(policy_net.parameters(), lr=0.003)
 
 	memory = ReplayMemory(10000)
 
@@ -199,12 +199,7 @@ def main():
 			action = select_action(policy_net, state, action_space)
 			next_state, reward, done, _ = env.step(action.item())
 
-			if next_state[0] > -0.5:
-				reward = next_state[0] + 0.5
-				if next_state[0] > 0.5:
-					reward = 100.
-			else:
-				reward = 0.
+			done = math.fabs(next_state[0]) > 2
 
 			total_reward += reward
 			reward = torch.tensor([reward], device=device)
